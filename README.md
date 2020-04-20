@@ -21,6 +21,7 @@
       - [1. Protect the application with an openid provider](#1-protect-the-application-with-an-openid-provider)
       - [2. Add authentification based on Authorization header](#2-add-authentification-based-on-authorization-header)
       - [3. modify default configuration](#3-modify-default-configuration)
+      - [4. added authetification using cookie](#4-added-authetification-using-cookie)
     - [Reference Documentation](#reference-documentation)
 
 
@@ -389,9 +390,6 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
 // configure login with oauth2 client 
             .oauth2Login()
-// using custom authorized client repository
-// that store tokens into cookies
-	            .authorizedClientRepository(this.cookieAuthorizedClientRepository())
             .and()
 // activate oauth2 resource server that add authentification with 'Authorization: Bearer' header 
             .oauth2ResourceServer()
@@ -402,7 +400,39 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 ```
  
+#### 4. added authetification using cookie
 
+In this step we provide a custom implementation to `AuthorizedClientRepository`.
+We store Access and Refresh token into cookies.
+We use an new AuthenticationFilter to attempt authentication using same cookies.
+
+```Java
+...
+.oauth2Login()
+// using custom authorized client repository
+// that store tokens into cookies
+  .authorizedClientRepository(this.cookieAuthorizedClientRepository())
+.and()
+// added filter that attempt authentication using cookie stored by CookieAuthorizedClientRepository
+  .addFilterAfter(getCookieTokenAuthenticationFilter(http), BearerTokenAuthenticationFilter.class)
+...
+```
+
+Always inside the `app` container, run this command to test this feature
+
+```bash
+export bearer_jwt=$(curl -s \
+        -d 'username=test' \
+        -d 'password=password' \
+        -d 'client_id=client1' \
+        -d 'client_secret=7926b321-48ef-4ba9-9c57-ee9c98de7dd6' \
+        -d 'grant_type=password' \
+        'http://keycloak:8080/auth/realms/organisation/protocol/openid-connect/token' \
+        | jq .access_token -r) \
+        \
+&& curl -v 'localhost:8081/api/private' \
+    --cookie "OIDC_ACCESS_TOKEN=${bearer_jwt}"
+```
 ### Reference Documentation
 
 * [Spring Security OAuth2 Client](https://docs.spring.io/spring-boot/docs/2.2.6.RELEASE/reference/htmlsingle/#boot-features-security-oauth2-client)
