@@ -1,0 +1,12 @@
+version: '3'
+services:
+  keycloak:
+    image: jboss/keycloak
+    volumes:
+      - ./keycloak.mv.db:/opt/jboss/keycloak/standalone/data/keycloak.mv.db
+    environment:
+      - KEYCLOAK_USER=username
+      - KEYCLOAK_PASSWORD=password
+    ports:
+    - 8080:8080
+      

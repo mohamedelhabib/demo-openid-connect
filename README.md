@@ -23,6 +23,7 @@
       - [3. modify default configuration](#3-modify-default-configuration)
       - [4. added authetification using cookie](#4-added-authetification-using-cookie)
     - [Reference Documentation](#reference-documentation)
+    - [Launch into IDE](#launch-into-ide)
 
 
 
@@ -439,3 +440,48 @@ export bearer_jwt=$(curl -s \
 * [Spring Security Resource Server](https://docs.spring.io/spring-boot/docs/2.2.6.RELEASE/reference/htmlsingle/#boot-features-security-oauth2-server)
 * [Resource Server Definition](https://www.oauth.com/oauth2-servers/the-resource-server/)
 * [Spring Method Security](https://www.baeldung.com/spring-security-method-security)
+
+### Launch into IDE
+
+To launch this application into our IDE you need to do the following steps
+
+1. Launch keycloak using 
+```bash
+docker-compose -f src/docker/docker-compose-local.yml up -d
+```
+2. Launch you application using the local spring profile.
+Here is an exemple using maven and spring-boot:run
+```bash
+./mvnw clean package spring-boot:run -Dspring-boot.run.profiles=local 
+```
+3. you and test using the following commands
+
+```bash
+export bearer_jwt=$(curl -s \
+        -d 'username=test' \
+        -d 'password=password' \
+        -d 'client_id=client1' \
+        -d 'client_secret=7926b321-48ef-4ba9-9c57-ee9c98de7dd6' \
+        -d 'grant_type=password' \
+        'http://localhost:8080/auth/realms/organisation/protocol/openid-connect/token' \
+        | jq .access_token -r) \
+        \
+&& curl -v 'localhost:8081/api/private' \
+    -H "Authorization: Bearer ${bearer_jwt}"
+```
+```bash
+export bearer_jwt=$(curl -s \
+        -d 'username=test' \
+        -d 'password=password' \
+        -d 'client_id=client1' \
+        -d 'client_secret=7926b321-48ef-4ba9-9c57-ee9c98de7dd6' \
+        -d 'grant_type=password' \
+        'http://localhost:8080/auth/realms/organisation/protocol/openid-connect/token' \
+        | jq .access_token -r) \
+        \
+&& curl -v 'localhost:8081/api/private' \
+    --cookie "OIDC_ACCESS_TOKEN=${bearer_jwt}"
+
+```
+
+
