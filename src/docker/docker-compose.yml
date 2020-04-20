@@ -1,0 +1,20 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ../../.
+      dockerfile: src/docker/Dockerfile
+    image: app:latest
+    command: /opt/app/wait-for-it.sh http://keycloak:8080/auth/realms/organisation -t 10 -- java -jar /opt/app/app.jar
+    ports:
+    - 8081:8081
+  keycloak:
+    image: jboss/keycloak
+    volumes:
+      - ./keycloak.mv.db:/opt/jboss/keycloak/standalone/data/keycloak.mv.db
+    environment:
+      - KEYCLOAK_USER=username
+      - KEYCLOAK_PASSWORD=password
+    ports:
+    - 8080:8080
+      

@@ -1,0 +1,29 @@
+server:
+  port : 8081
+spring:
+  security:
+    oauth2:
+      client:
+        registration: 
+          organisation: 
+            client-id: client1
+            # client-name: client1
+            client-secret: 7926b321-48ef-4ba9-9c57-ee9c98de7dd6
+            # client-authentication-method:
+            authorization-grant-type: authorization_code
+            redirectUri: '{baseUrl}/login/oauth2/code/{registrationId}' # http://localhost:8080/login/oauth2/code/organisation
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          organisation:
+            issuer-uri: http://keycloak:8080/auth/realms/organisation
+            # authorization-uri: http://keycloak:8080/auth/realms/organisation/protocol/openid-connect/auth
+            # token-uri: http://keycloak:8080/auth/realms/organisation/protocol/openid-connect/token
+            # user-info-uri: http://keycloak:8080/auth/realms/organisation/protocol/openid-connect/userinfo
+            # jwk-set-uri: http://keycloak:8080/auth/realms/organisation/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: ${spring.security.oauth2.client.provider.organisation.issuer-uri}

@@ -1,0 +1,15 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          organisation:
+            issuer-uri: http://172.17.0.2:8080/auth/realms/organisation
+      resourceserver:
+        jwt:
+          issuer-uri: ${spring.security.oauth2.client.provider.organisation.issuer-uri}
