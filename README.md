@@ -486,4 +486,5 @@ export bearer_jwt=$(curl -s \
 ```
 ### TODO
 - howto to manage refresh token
+- redirect to the original url after login success
 
