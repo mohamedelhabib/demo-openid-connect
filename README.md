@@ -24,6 +24,7 @@
       - [4. added authetification using cookie](#4-added-authetification-using-cookie)
     - [Reference Documentation](#reference-documentation)
     - [Launch into IDE](#launch-into-ide)
+    - [TODO](#todo)
 
 
 
@@ -483,5 +484,6 @@ export bearer_jwt=$(curl -s \
     --cookie "OIDC_ACCESS_TOKEN=${bearer_jwt}"
 
 ```
-
+### TODO
+- howto to manage refresh token
 
